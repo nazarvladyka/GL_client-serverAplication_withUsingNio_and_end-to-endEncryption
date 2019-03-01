@@ -1,17 +1,6 @@
 package com.nazarvladyka;
 
-import java.util.Random;
-
 public class Encrypt {
-    private int userId;
-    private int key;
-
-    public Encrypt(int userId) {
-        Random random = new Random();
-        int minKey = 100000;
-        this.userId = userId;
-        key = random.nextInt() + minKey;
-    }
 
     public static String xorMessage(String message, String key) {
         try {
