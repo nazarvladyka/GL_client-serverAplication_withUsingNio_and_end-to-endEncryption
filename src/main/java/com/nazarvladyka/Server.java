@@ -45,15 +45,6 @@ public class Server {
                     acceptSocketChanel.configureBlocking(false);
 
                     channels.put(channelId + "", acceptSocketChanel.getRemoteAddress().toString());
-//                    System.out.println("channelId - " + channelId + "acceptSocketChanel.getRemoteAddress().toString() - " + acceptSocketChanel.getRemoteAddress().toString());
-
-//                    if(channelId == 0) {
-//                        System.out.println("Connection accepted " + acceptSocketChanel.getRemoteAddress());
-//                        acceptSocketChanel.register(selector, SelectionKey.OP_READ);
-//                    } else if(channelId == 1) {
-//                        System.out.println("We will write here " + acceptSocketChanel.getRemoteAddress());
-//                        acceptSocketChanel.register(selector, SelectionKey.OP_WRITE);
-//                    }
 
                     System.out.println("Connection accepted " + acceptSocketChanel.getRemoteAddress());
                     acceptSocketChanel.register(selector, SelectionKey.OP_READ);
@@ -75,7 +66,7 @@ public class Server {
                     System.out.println("___________________");
 
                     byteBuffer.clear();
-
+//                    System.out.println("read " + readSocketChannel.getRemoteAddress());
                     readSocketChannel.register(selector, SelectionKey.OP_WRITE);
                 } else if (selectionKey.isWritable()) {
                     SocketChannel writeSocketChannel = (SocketChannel) selectionKey.channel();
@@ -102,6 +93,7 @@ public class Server {
                     String str = new String(byteBuffer.array());
                     System.out.println(str);
                     byteBuffer.clear();
+//                    System.out.println("write " + writeSocketChannel.getRemoteAddress());
                     writeSocketChannel.register(selector, SelectionKey.OP_READ);
                 }
                 selectionKeyIterator.remove();
