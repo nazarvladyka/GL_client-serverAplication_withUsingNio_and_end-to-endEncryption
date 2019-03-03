@@ -42,21 +42,18 @@ public class Server {
                     log("USER" + channelId + " connected, "+ "[remote address : " +  acceptSocketChanel.getRemoteAddress() + "]");
                     channelId++;
                     acceptSocketChanel.register(selector, SelectionKey.OP_READ);
-
                 } else if (selectionKey.isReadable()) {
                     SocketChannel readSocketChannel = (SocketChannel) selectionKey.channel();
                     ByteBuffer byteBuffer = ByteBuffer.allocate(50);
 
                     readSocketChannel.read(byteBuffer);
 
-                    //this to parse info from input /////////split string
                     String outString = new String(byteBuffer.array());
                     request = new ArrayList<>(Arrays.asList(outString.split(" : ")));
                     requests.add(request);
 
                     log("INCOMING: " + "USER" + request.get(2) + " sent to USER" + request.get(3) + " MESSAGE : " + "\'" + request.get(4) + "\'" +
                             "| phase = " + request.get(1) + "| messageId = " + request.get(0));
-//                    log(requests.toString());
 
                     byteBuffer.clear();
                     readSocketChannel.register(selector, SelectionKey.OP_WRITE);
@@ -77,10 +74,6 @@ public class Server {
                     }
                     byteBuffer.clear();
                     byteBuffer.flip();
-
-                    String str = new String(byteBuffer.array());
-                    System.out.println(str);
-                    byteBuffer.clear();
                     writeSocketChannel.register(selector, SelectionKey.OP_READ);
                 }
                 selectionKeyIterator.remove();

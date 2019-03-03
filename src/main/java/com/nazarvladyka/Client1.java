@@ -10,7 +10,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Random;
 
 public class Client1 {
-    static String clientId = "1";
+    private static String clientId = "1";
     static int messageId = 0;
     static String receiverId = "0";
     static int phase = 0;
@@ -44,6 +44,7 @@ public class Client1 {
                     e.printStackTrace();
                 }
                 System.out.println(new String(byteBuffer.array()));
+                byteBuffer.clear();
             } while (true);
         };
         Thread thread1 = new Thread(runnable1);
@@ -69,9 +70,5 @@ public class Client1 {
 
             byteBuffer.clear();
         } while (true); // here has to be boolean, which will end the cycle
-    }
-
-    private static void log(String msg) {
-        System.out.println(msg);
     }
 }

@@ -10,7 +10,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Random;
 
 public class Client0 {
-    static String clientId = "0";
+    private static String clientId = "0";
     static int messageId = 0;
     static String receiverId = "1";
     static int phase = 0;
@@ -44,6 +44,7 @@ public class Client0 {
                     e.printStackTrace();
                 }
                 System.out.println(new String(byteBuffer.array()));
+                byteBuffer.clear();
             } while (true);
         };
         Thread thread1 = new Thread(runnable1);
