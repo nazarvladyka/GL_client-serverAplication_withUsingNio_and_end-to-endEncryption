@@ -7,13 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.*;
 
-import org.apache.log4j.Logger;
-
-
 public class Server {
-//    static HashMap<String, String> mapId = new HashMap<>();
-//    static Logger log = Logger.getLogger(Server.class.getName());
-
     static HashMap<String, String> channels = new HashMap<>();
     static ArrayList<ArrayList> requests = new ArrayList<>();
     static ArrayList<String> request;
@@ -21,12 +15,10 @@ public class Server {
     static int channelId = 0;
 
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        new Client123();
-        new Client124();
+    public static void main(String[] args) throws IOException {
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
         Selector selector = Selector.open();
-        SocketAddress socketAddress = new InetSocketAddress("localhost", 8078);
+        SocketAddress socketAddress = new InetSocketAddress("localhost", 8090);
 
         serverSocketChannel.bind(socketAddress);
         serverSocketChannel.configureBlocking(false);
@@ -41,7 +33,6 @@ public class Server {
 
             while(selectionKeyIterator.hasNext()) {
                 SelectionKey selectionKey = selectionKeyIterator.next();
-
                 if(selectionKey.isAcceptable()) {
                     SocketChannel acceptSocketChanel = serverSocketChannel.accept();
                     acceptSocketChanel.configureBlocking(false);
@@ -79,7 +70,7 @@ public class Server {
 
                             byte[] bytes = msg.getBytes();
                             writeSocketChannel.write(ByteBuffer.wrap(bytes));
-                            log("OUTCOMING: " + "USER" + request.get(2) + " sent to USER" + request.get(3) + " MESSAGE : " + "\'" + request.get(4) + "\'" +
+                            log("OUTGOING: " + "USER" + request.get(2) + " sent to USER" + request.get(3) + " MESSAGE : " + "\'" + request.get(4) + "\'" +
                                     "| phase = " + request.get(1) + "| messageId = " + request.get(0));
                             requests.remove(request);
                         }

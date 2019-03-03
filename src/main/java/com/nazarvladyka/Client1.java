@@ -9,16 +9,16 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Random;
 
-public class Client123 {
-    static String clientId = "0";
+public class Client1 {
+    static String clientId = "1";
     static int messageId = 0;
-    static String receiverId = "1";
+    static String receiverId = "0";
     static int phase = 0;
     volatile static String message = "";
     static String key = "";
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        SocketAddress socketAddress = new InetSocketAddress("localhost", 8078);
+    public static void main(String[] args) throws IOException {
+        SocketAddress socketAddress = new InetSocketAddress("localhost", 8090);
         SocketChannel socketChannel = SocketChannel.open(socketAddress);
 
         Runnable runnable = () -> {
