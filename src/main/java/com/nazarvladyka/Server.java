@@ -22,6 +22,8 @@ public class Server {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
+        new Client123();
+        new Client124();
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
         Selector selector = Selector.open();
         SocketAddress socketAddress = new InetSocketAddress("localhost", 8078);
@@ -46,9 +48,9 @@ public class Server {
 
                     channels.put(channelId + "", acceptSocketChanel.getRemoteAddress().toString());
 
-                    System.out.println("Connection accepted " + acceptSocketChanel.getRemoteAddress());
-                    acceptSocketChanel.register(selector, SelectionKey.OP_READ);
+                    log("USER" + channelId + " connected, "+ "[remote address : " +  acceptSocketChanel.getRemoteAddress() + "]");
                     channelId++;
+                    acceptSocketChanel.register(selector, SelectionKey.OP_READ);
 
                 } else if (selectionKey.isReadable()) {
                     SocketChannel readSocketChannel = (SocketChannel) selectionKey.channel();
@@ -61,12 +63,11 @@ public class Server {
                     request = new ArrayList<>(Arrays.asList(outString.split(" : ")));
                     requests.add(request);
 
-                    System.out.println(requests);
-                    System.out.println("isReadable: " + readSocketChannel.getRemoteAddress());
-                    System.out.println("___________________");
+                    log("INCOMING: " + "USER" + request.get(2) + " sent to USER" + request.get(3) + " MESSAGE : " + "\'" + request.get(4) + "\'" +
+                            "| phase = " + request.get(1) + "| messageId = " + request.get(0));
+//                    log(requests.toString());
 
                     byteBuffer.clear();
-//                    System.out.println("read " + readSocketChannel.getRemoteAddress());
                     readSocketChannel.register(selector, SelectionKey.OP_WRITE);
                 } else if (selectionKey.isWritable()) {
                     SocketChannel writeSocketChannel = (SocketChannel) selectionKey.channel();
@@ -78,26 +79,25 @@ public class Server {
 
                             byte[] bytes = msg.getBytes();
                             writeSocketChannel.write(ByteBuffer.wrap(bytes));
-                            System.out.println("String msg = request.get(4).toString() - " + request.get(4).toString());
-                            System.out.println("Sent from " + channels.get(request.get(2).toString()));
-                            System.out.println(request);
-                            System.out.println("Sent to " + writeSocketChannel.getRemoteAddress());
+                            log("OUTCOMING: " + "USER" + request.get(2) + " sent to USER" + request.get(3) + " MESSAGE : " + "\'" + request.get(4) + "\'" +
+                                    "| phase = " + request.get(1) + "| messageId = " + request.get(0));
                             requests.remove(request);
                         }
                     }
-
                     byteBuffer.clear();
                     byteBuffer.flip();
-//                    System.out.println("isWritable: " + writeSocketChannel.getRemoteAddress());
 
                     String str = new String(byteBuffer.array());
                     System.out.println(str);
                     byteBuffer.clear();
-//                    System.out.println("write " + writeSocketChannel.getRemoteAddress());
                     writeSocketChannel.register(selector, SelectionKey.OP_READ);
                 }
                 selectionKeyIterator.remove();
             }
         }
+    }
+
+    private static void log(String msg) {
+        System.out.println(msg);
     }
 }

@@ -50,12 +50,8 @@ public class Client124 {
         thread1.start();
 
         do {
-//            System.out.println("d0...");
             Random random = new Random();
             key = random.nextInt(10) + "";
-//                message = reader.readLine();
-//                message = Encrypt.xorMessage(reader.readLine(), key);
-//                phase++;
 
             String requestString = messageId + " : " + phase + " : " + clientId + " : " + receiverId + " : " + message;
 
@@ -70,12 +66,12 @@ public class Client124 {
                 byteBuffer.clear();
                 message = "";
             }
-//            byteBuffer = ByteBuffer.allocate(50);
-//            socketChannel.read(byteBuffer);
-//            System.out.println(socketChannel.read(byteBuffer));
-//            System.out.println(new String(byteBuffer.array()));
 
             byteBuffer.clear();
         } while (true); // here has to be boolean, which will end the cycle
+    }
+
+    private static void log(String msg) {
+        System.out.println(msg);
     }
 }
