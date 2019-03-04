@@ -9,10 +9,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Random;
 
-public class Client0 {
-    private static String clientId = "0";
+public class Client {
     static int messageId = 0;
-    static String receiverId = "1";
+    static String receiverId = "";
     static int phase = 0;
     volatile static String message = "";
     static String key = "";
@@ -25,7 +24,9 @@ public class Client0 {
             do {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 try {
-                    message = reader.readLine();
+                    String[] input = reader.readLine().split(" : ");
+                    receiverId = input[0];
+                    message = input[1];
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -54,7 +55,7 @@ public class Client0 {
             Random random = new Random();
             key = random.nextInt(10) + "";
 
-            String requestString = messageId + " : " + phase + " : " + clientId + " : " + receiverId + " : " + message;
+            String requestString = messageId + " : " + phase + " : " + receiverId + " : " + message;
 
             ByteBuffer byteBuffer = ByteBuffer.allocate(50);
 

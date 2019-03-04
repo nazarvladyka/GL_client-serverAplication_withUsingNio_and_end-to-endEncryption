@@ -8,12 +8,18 @@ import java.nio.channels.*;
 import java.util.*;
 
 public class Server {
-    static HashMap<String, String> channels = new HashMap<>();
+    static HashMap<String, String> clients = new HashMap<>();
     static ArrayList<ArrayList> requests = new ArrayList<>();
     static ArrayList<String> request;
 
-    static int channelId = 0;
+    static int clientId = 0;
+    static String senderId = "";
+    static String receiverId = "";
+    static String messageId = "";
+    static String phase = "";
+    volatile static String message = "";
 
+    static String receiverAddress = "";
 
     public static void main(String[] args) throws IOException {
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
@@ -37,10 +43,10 @@ public class Server {
                     SocketChannel acceptSocketChanel = serverSocketChannel.accept();
                     acceptSocketChanel.configureBlocking(false);
 
-                    channels.put(channelId + "", acceptSocketChanel.getRemoteAddress().toString());
+                    clients.put(clientId + "", acceptSocketChanel.getRemoteAddress().toString());
 
-                    log("USER" + channelId + " connected, "+ "[remote address : " +  acceptSocketChanel.getRemoteAddress() + "]");
-                    channelId++;
+                    log("USER" + clientId + " connected, "+ "[remote address : " +  acceptSocketChanel.getRemoteAddress() + "]");
+                    clientId++;
                     acceptSocketChanel.register(selector, SelectionKey.OP_READ);
                 } else if (selectionKey.isReadable()) {
                     SocketChannel readSocketChannel = (SocketChannel) selectionKey.channel();
@@ -52,23 +58,38 @@ public class Server {
                     request = new ArrayList<>(Arrays.asList(outString.split(" : ")));
                     requests.add(request);
 
-                    log("INCOMING: " + "USER" + request.get(2) + " sent to USER" + request.get(3) + " MESSAGE : " + "\'" + request.get(4) + "\'" +
-                            "| phase = " + request.get(1) + "| messageId = " + request.get(0));
+                    senderId = getKeyByValue(clients, readSocketChannel.getRemoteAddress().toString());
+                    receiverId = request.get(2);
+                    message = request.get(3);
+                    phase = request.get(1);
+                    messageId = request.get(0);
+
+                    request.add(senderId);
+
+                    log("INCOMING: " + "USER" + senderId + " sent to USER" + receiverId + " MESSAGE : " + "\'" + message + "\'" +
+                            "| phase = " + phase + "| messageId = " + messageId);
 
                     byteBuffer.clear();
+
                     readSocketChannel.register(selector, SelectionKey.OP_WRITE);
                 } else if (selectionKey.isWritable()) {
                     SocketChannel writeSocketChannel = (SocketChannel) selectionKey.channel();
                     ByteBuffer byteBuffer = ByteBuffer.allocate(50);
 
                     for (ArrayList request : requests) {
-                        if(writeSocketChannel.getRemoteAddress().toString().equals(channels.get(request.get(3).toString()))) {
-                            String msg = request.get(4).toString();
+                        receiverAddress = clients.get(request.get(2));
+                        if(writeSocketChannel.getRemoteAddress().toString().equals(receiverAddress)) {
+                            senderId = request.get(4).toString();
+                            receiverId = request.get(2).toString();
+                            message = request.get(3).toString();
+                            phase = request.get(1).toString();
+                            messageId = request.get(0).toString();
 
-                            byte[] bytes = msg.getBytes();
+                            byte[] bytes = message.getBytes();
                             writeSocketChannel.write(ByteBuffer.wrap(bytes));
-                            log("OUTGOING: " + "USER" + request.get(2) + " sent to USER" + request.get(3) + " MESSAGE : " + "\'" + request.get(4) + "\'" +
-                                    "| phase = " + request.get(1) + "| messageId = " + request.get(0));
+
+                            log("OUTGOING: " + "USER" + senderId + " sent to USER" + receiverId + " MESSAGE : " + "\'" + message + "\'" +
+                                    "| phase = " + phase + "| messageId = " + messageId);
                             requests.remove(request);
                         }
                     }
@@ -83,5 +104,14 @@ public class Server {
 
     private static void log(String msg) {
         System.out.println(msg);
+    }
+
+    private static String getKeyByValue(HashMap<String, String> map, String key) {
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            if (entry.getValue().equals(key)) {
+                return entry.getKey();
+            }
+        }
+        return "";
     }
 }
